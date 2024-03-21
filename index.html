@@ -1,0 +1,134 @@
+html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>To-Do List App</title>
+  <style><!DOCTYPE html>
+<
+    body {
+      background: linear-gradient(to right, #b967ff, #ff7e5f); /* Purple and pink gradient background */
+      color: white; /* White text color */
+      font-family: sans-serif; /* Sans-serif font */
+    }
+    #root {
+      margin: 0 auto;
+      padding: 20px;
+      max-width: 600px;
+      background-color: rgba(255, 255, 255, 0.1); /* Semi-transparent white background for the content */
+      border-radius: 10px;
+    }
+    input[type="text"],
+    button {
+      margin-bottom: 10px;
+      padding: 8px 12px;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+    }
+    input[type="text"] {
+      width: calc(100% - 80px);
+    }
+    button {
+      background-color: #fff; /* White background for buttons */
+      color: #b967ff; /* Purple color for buttons */
+      cursor: pointer;
+    }
+    .urgent-button {
+      background-color: #ff7e5f; /* Pink background for urgent button */
+    }
+    .completed-button {
+      background-color: #00ff00; /* Green background for completed button */
+    }
+    ul {
+      padding: 0;
+      list-style-type: none;
+    }
+    li {
+      display: flex;
+      align-items: center;
+      justify-content: space-between; /* Align items evenly */
+      margin-bottom: 5px;
+      background-color: rgba(255, 255, 255, 0.2); /* Semi-transparent white background for list items */
+      padding: 10px;
+      border-radius: 5px;
+    }
+    .delete-button {
+      margin-right: 10px; /* Add space between the delete buttons */
+    }
+  </style>
+</head>
+
+<body>
+  <div id="root"></div>
+
+  <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+
+  <script>
+    const { useState, createElement } = React;
+
+    function TodoApp() {
+      const [todos, setTodos] = useState([]);
+      const [inputValue, setInputValue] = useState('');
+
+      const handleInputChange = (event) => {
+        setInputValue(event.target.value);
+      };
+
+      const handleAddTodo = () => {
+        if (inputValue.trim() !== '') {
+          setTodos([...todos, { task: inputValue, completed: false, urgent: false }]);
+          setInputValue('');
+        }
+      };
+
+      const handleDeleteTodo = (index) => {
+        const updatedTodos = [...todos];
+        updatedTodos.splice(index, 1);
+        setTodos(updatedTodos);
+      };
+
+      const handleToggleCompletion = (index) => {
+        const updatedTodos = [...todos];
+        updatedTodos[index].completed = !updatedTodos[index].completed;
+        setTodos(updatedTodos);
+      };
+
+      const handleToggleUrgent = (index) => {
+        const updatedTodos = [...todos];
+        updatedTodos[index].urgent = !updatedTodos[index].urgent;
+        setTodos(updatedTodos);
+      };
+
+      const todosList = todos.map((todo, index) =>
+        createElement('li', { key: index }, [
+          createElement('span', { style: { textDecoration: todo.completed ? 'line-through' : 'none' } }, todo.task),
+          createElement('div', null, [
+            createElement('button', { className: 'delete-button', onClick: () => handleDeleteTodo(index) }, 'Delete'),
+            createElement('button', {
+              className: todo.completed ? 'completed-button' : 'urgent-button',
+              onClick: () => todo.completed ? handleToggleCompletion(index) : handleToggleUrgent(index)
+            }, todo.completed ? 'Completed' : 'Urgent')
+          ])
+        ])
+      );
+
+      return createElement('div', null, [
+        createElement('h1', null, 'To-Do List'),
+        createElement('input', {
+          type: 'text',
+          value: inputValue,
+          onChange: handleInputChange,
+          placeholder: 'Add a new task'
+        }),
+        createElement('button', { onClick: handleAddTodo }, 'Add'),
+        createElement('ul', null, todosList)
+      ]);
+    }
+
+    ReactDOM.render(createElement(TodoApp), document.getElementById('root'));
+  </script>
+</body>
+
+</html>
